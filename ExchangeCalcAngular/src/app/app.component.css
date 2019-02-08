@@ -1,0 +1,62 @@
+.numberButtons {
+    background-color: #ccd1cc;
+    font-size: 2.5em;
+    height:15%;
+}
+
+.resultsArea{
+    background-color: #008300;
+    /* background-color: #3A83C0; */
+    color: #FFFFFF;
+    height:15%;
+    font-size: 1.5em;
+}
+
+.currencyArea{
+    background-color: #000000;
+    color:#FFFFFF;
+    height:5%;
+    font-size:1.5em;
+}
+
+.resetButton{
+    background-color: #f18230;
+    height: 100%;
+}
+
+html, body {
+    height: 100%;
+}
+
+.fill { 
+    min-height: 100%;
+    height: 100%;
+}
+
+.map {
+    width: 100%;
+    height: 100%;
+    min-height: 100%;
+    display: block;
+}
+
+.banner{
+    background-color: #000000;
+    height:5%;
+    font-size:2em;
+}
+
+.cur{
+    margin-top: auto;
+    margin-bottom: auto;
+    height:15%;
+}
+
+bold{
+    font-weight: bold;
+}
+
+.equalsButton{
+    background-color: #2fc42f;
+    height: 100%;
+}
