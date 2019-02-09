@@ -4,12 +4,12 @@
           <div class="row resultsArea align-items-center">
               <div class="col text-center resultsArea d-table">
                 <div class="d-table-cell align-middle">
-                    {{before}}
+                    {{originalValue}}
                 </div>
               </div>
               <div class="col text-center resultsArea d-table">
                 <div class="d-table-cell align-middle">
-                    {{after}}
+                    {{newValue}}
                 </div>
               </div>
           </div>
@@ -28,13 +28,13 @@
           </div>
 
           <div class="row numberButtons">
-              <div class="col text-center cur" (click) = "data(7)">
+              <div class="col text-center cur" (click) = "operation('7')">
                   7 
               </div>
-              <div class="col text-center cur" (click) = "data(8)">
+              <div class="col text-center cur" (click) = "operation('8')">
                   8 
               </div>
-              <div class="col text-center cur" (click) = "data(9)">
+              <div class="col text-center cur" (click) = "operation('9')">
                   9 
               </div>
               <div class="col text-center cur" (click) = "operation('/')">
@@ -42,13 +42,13 @@
               </div>
           </div>
           <div class="row numberButtons">
-              <div class="col text-center cur" (click) = "data(4)">
+              <div class="col text-center cur" (click) = "operation('4')">
                   4 
               </div>
-              <div class="col text-center cur" (click) = "data(5)">
+              <div class="col text-center cur" (click) = "operation('5')">
                   5
               </div>
-              <div class="col text-center cur" (click) = "data(6)">
+              <div class="col text-center cur" (click) = "operation('6')">
                   6
               </div>
               <div class="col text-center cur" (click) = "operation('*')">
@@ -56,13 +56,13 @@
               </div>
           </div>
           <div class="row numberButtons">
-              <div class="col text-center cur" (click) = "data(1)">
+              <div class="col text-center cur" (click) = "operation('1')">
                   1 
               </div>
-              <div class="col text-center cur" (click) = "data(2)">
+              <div class="col text-center cur" (click) = "operation('2')">
                   2
               </div>
-              <div class="col text-center cur" (click) = "data(3)">
+              <div class="col text-center cur" (click) = "operation('3')">
                   3
               </div>
               <div class="col text-center cur" (click) = "operation('+')">
@@ -73,10 +73,10 @@
               <div class="col text-center cur" (click) = "operation('settings')">
                   
               </div>
-              <div class="col text-center cur" (click) = "data(0)">
+              <div class="col text-center cur" (click) = "operation(0)">
                   0 
               </div>
-              <div class="col text-center cur" (click) = "data('.')">
+              <div class="col text-center cur" (click) = "operation('.')">
                   . 
               </div>
               <div class="col text-center cur" (click) = "operation('-')">

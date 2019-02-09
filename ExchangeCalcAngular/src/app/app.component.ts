@@ -7,17 +7,35 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'ExchangeCalcAngular';
-  before:number = 0;
-  after:number = 0;
+  originalValue:string = "0";
+  newValue:number = 0;
+  rate:number = 15;
+  strOperation = '';
+
 
   curBefore:string = 'CAN';
   curAfter:string = 'USD';
 
-  data(digit:number) {
-    console.log(digit);
+  operation(digit:string) {
+    if(isNaN(+digit))
+    {//not a number
+      this.originalValue = "0";
+      this.strOperation = digit;
+    }
+    else{
+      //number
+      this.originalValue = this.RemoveLeadingZeroes(this.originalValue) + digit;
+      console.log(this.originalValue);
+      this.newValue = Number(this.originalValue) * this.rate;
+    }
   }
 
-  operation(operation:string) {
-    console.log(operation);
+  RemoveLeadingZeroes(value:string):string
+  {
+    if(value.substring(0,1)=="0")
+    {
+      this.originalValue = value.substring(1,value.length);
+    }
+    return this.originalValue;
   }
 }
