@@ -4,7 +4,7 @@
           <div class="row resultsArea align-items-center">
               <div class="col text-center resultsArea d-table">
                 <div class="d-table-cell align-middle">
-                    {{originalValue}}
+                    {{originalValueDisplay}}
                 </div>
               </div>
               <div class="col text-center resultsArea d-table">
@@ -65,8 +65,8 @@
               <div class="col text-center cur" (click) = "operation('3')">
                   3
               </div>
-              <div class="col text-center cur" (click) = "operation('+')">
-                  +
+              <div class="col text-center cur" (click) = "operation('-')">
+                  -
               </div>
           </div>
           <div class="row numberButtons">
@@ -79,8 +79,8 @@
               <div class="col text-center cur" (click) = "operation('.')">
                   . 
               </div>
-              <div class="col text-center cur" (click) = "operation('-')">
-                  - 
+              <div class="col text-center cur" (click) = "operation('+')">
+                  + 
               </div>
           </div>
           <div class="row numberButtons align-items-center">
@@ -89,7 +89,8 @@
                       C
                   </div>
               </div>
-              <div class="col text-center equalsButton d-table">
+              <div class="col text-center equalsButton d-table"
+                                        (click) = "PerformCalculation()">
                   <div class="d-table-cell align-middle">
                       =
                   </div>

@@ -7,10 +7,13 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'ExchangeCalcAngular';
-  originalValue:string = "0";
+  originalValueDisplay:string = "0";
+  originalFirstValue:string = "0";
+  originalSecondValue:string = "0";
   newValue:number = 0;
   rate:number = 15;
   strOperation = '';
+  bolPerformCalc: boolean = false;
 
 
   curBefore:string = 'CAN';
@@ -19,23 +22,84 @@ export class AppComponent {
   operation(digit:string) {
     if(isNaN(+digit))
     {//not a number
-      this.originalValue = "0";
       this.strOperation = digit;
+      this.bolPerformCalc = true;
     }
     else{
       //number
-      this.originalValue = this.RemoveLeadingZeroes(this.originalValue) + digit;
-      console.log(this.originalValue);
-      this.newValue = Number(this.originalValue) * this.rate;
+      if(this.bolPerformCalc){
+        this.originalSecondValue = this.RemoveLeadingZeroes(this.originalSecondValue) + digit;
+        this.originalValueDisplay = this.originalSecondValue;        
+      }
+      else{
+        this.originalFirstValue = this.RemoveLeadingZeroes(this.originalFirstValue) + digit;
+        this.originalValueDisplay = this.originalFirstValue;
+        this.newValue = Number(this.originalValueDisplay) * this.rate;
+      }
     }
   }
 
   RemoveLeadingZeroes(value:string):string
   {
-    if(value.substring(0,1)=="0")
+    var tempValue:string = "0" ;
+    if(+value>0)
     {
-      this.originalValue = value.substring(1,value.length);
+      tempValue = value.toString();
+      return tempValue;
     }
-    return this.originalValue;
+    return "";
   }
+
+  ValidateCalculation():boolean
+  {
+    if(this.originalFirstValue != "0" && this.originalSecondValue != "0" && this.strOperation != "" && this.bolPerformCalc)
+    {
+      this.bolPerformCalc = false;
+      return true;
+    }
+    return false;
+  }
+
+  PerformCalculation()
+  {
+    if(this.ValidateCalculation())
+    {
+      switch (this.strOperation) {
+        case '/':
+          this.originalValueDisplay = (+this.originalFirstValue / +this.originalSecondValue).toString();
+          this.newValue = +this.originalValueDisplay * this.rate;
+          break;
+        case '*':
+          this.originalValueDisplay = (+this.originalFirstValue * +this.originalSecondValue).toString();
+          this.newValue = +this.originalValueDisplay * this.rate;
+          break;
+        case '-':
+          this.originalValueDisplay = (+this.originalFirstValue - +this.originalSecondValue).toString();
+          this.newValue = +this.originalValueDisplay * this.rate;
+          break;
+        case '+':
+          this.originalValueDisplay = (+this.originalFirstValue + +this.originalSecondValue).toString();
+          this.newValue = +this.originalValueDisplay * this.rate;
+          break;
+        case '.':
+          break;
+        default:break;
+      }
+      this.debug();
+    }
+    this.originalFirstValue =  this.originalValueDisplay.toString();
+    this.originalSecondValue = "0";
+    this.strOperation = "";
+  }
+
+  debug()
+  {
+    console.log("first"+this.originalFirstValue);
+    console.log("second"+this.originalSecondValue);
+    console.log("display"+this.originalValueDisplay);
+    console.log("result"+this.newValue);
+
+  }
+
+
 }
