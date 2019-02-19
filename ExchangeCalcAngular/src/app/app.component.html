@@ -9,7 +9,7 @@
               </div>
               <div class="col text-center resultsArea d-table">
                 <div class="d-table-cell align-middle">
-                    {{newValue}}
+                    {{newValue | number:'1.0-2' }}
                 </div>
               </div>
           </div>
@@ -85,7 +85,7 @@
           </div>
           <div class="row numberButtons align-items-center">
               <div class="col text-center resetButton d-table">
-                  <div class="d-table-cell align-middle">
+                  <div class="d-table-cell align-middle" (click) = "clearCalc()">
                       C
                   </div>
               </div>
@@ -96,9 +96,9 @@
                   </div>
               </div>
           </div>
-          <div class="row banner">
+          <div class="row banner" *ngIf="rate">
               <div class="col">
-                  Banner 
+                  Banner placeholder
               </div>
           </div>
       </div>
