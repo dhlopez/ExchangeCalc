@@ -10,16 +10,16 @@ import { Rate } from './rate';
   //providedIn: 'root'
 
   export class RateService {
-    private baseUrl = 'http://data.fixer.io/api/latest?access_key='
+    //private baseUrl = 'http://data.fixer.io/api/latest?access_key=a417207e75c4db9be901fadce7306fba&symbols='
     //USD,CAD
-    //private baseUrl = 'https://free.currencyconverterapi.com/api/v6/convert?q=';
+    private baseUrl = 'https://free.currencyconverterapi.com/api/v6/convert?q=';
                                                 //USD_PHP,PHP_USD&compact=ultra';
-
+    private key = '5f8325b1a91b04d0a655'
     constructor(private http: HttpClient) { 
     
     }
     getRate(curBefore:string, curAfter:string): Observable<Rate>  {
-      const url = `${this.baseUrl}${curBefore},${curAfter}`;
+      const url = `${this.baseUrl}${curBefore}_${curAfter}&apiKey=${this.key}`;
       console.log(url);
       return this.http.get<Rate>(url).pipe(
         tap(data => console.log('Data: '+url + JSON.stringify(data))),

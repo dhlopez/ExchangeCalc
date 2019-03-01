@@ -1,12 +1,18 @@
 import { Component, OnInit } from '@angular/core';
 import { RateService } from './rate.service';
 import { Rate } from './rate';
+import {FormControl, FormGroup} from '@angular/forms';
+import { debug } from 'util';
+import { Observable } from 'rxjs';
+
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
+
+
 export class AppComponent implements OnInit {
   title = 'ExchangeCalcAngular';
   originalValueDisplay:string = "0";
@@ -18,10 +24,14 @@ export class AppComponent implements OnInit {
   bolPerformCalc: boolean = false;
   rateAPI:Rate;
   errorMessage: string;
+  optCurrenciesBefore: string[] = ['CAD','USD','MXN'];
+  optCurrenciesAfter: string[] = ['CAD','USD','MXN'];
 
+  curBefore:string;
+  curAfter:string;
 
-  curBefore:string = 'CAD';
-  curAfter:string = 'USD';
+  formBefore:FormGroup;
+  formAfter:FormGroup;
 
   operation(digit:string) {
     if(isNaN(+digit))
@@ -38,7 +48,7 @@ export class AppComponent implements OnInit {
       else{
         this.originalFirstValue = this.RemoveLeadingZeroes(this.originalFirstValue) + digit;
         this.originalValueDisplay = this.originalFirstValue;
-        this.newValue = Number(this.originalValueDisplay) / this.rate;
+        //this.newValue = Number(this.originalValueDisplay) * this.rate;
       }
     }
   }
@@ -104,16 +114,18 @@ export class AppComponent implements OnInit {
 
   }
 
-  showRate() {
+  updateRate() {
+    //this.rateService.getRate(this.curBefore, this.curAfter)
     this.rateService.getRate(this.curBefore, this.curAfter)
       .subscribe(
         //rateAPI  => this.rateAPI = rateAPI,
-        rateAPI  => this.rate = rateAPI.rates[this.curBefore] / rateAPI.rates[this.curAfter],
+        //rateAPI  => this.rate = rateAPI.rates[this.curBefore] / rateAPI.rates[this.curAfter],
+        rateAPI => this.rate = rateAPI.results[`${this.curBefore}_${this.curAfter}`].val,
         (error: any) => this.errorMessage = <any>error
       );
       //this.rate = (this.rateAPI.rates[this.curBefore]/this.rateAPI.rates[this.curAfter]) ;
   }
-
+  
   clearCalc()
   {    
     console.log(this.rate);
@@ -121,19 +133,45 @@ export class AppComponent implements OnInit {
     this.originalFirstValue = "0";
     this.originalSecondValue = "0";
     this.newValue = 0;
-    this.rate = 0;
     this.strOperation = '';
     this.bolPerformCalc = false;
     this.curBefore = 'CAD';
-    this.curAfter = 'USD';
+    this.curAfter = 'MXN';
+    this.formBefore = new FormGroup({
+      opt: new FormControl(this.optCurrenciesBefore[0]),
+    });
+    this.formAfter = new FormGroup({
+      opt: new FormControl(this.optCurrenciesAfter[2]),
+    });
+    this.updateRate();
+  }
+
+  setBeforeCurrency(cur:string){
+    this.curBefore = cur;
+    console.log(cur);
+    console.log(this.curBefore);
   }
 
   constructor(private rateService: RateService){
 
   }
+  onChangeBefore(newValue:string){
+    // this.debug();
+    var regex = /^\d:\s/;
+    this.curBefore = newValue.replace(regex, '');  
+    this.updateRate();
+    //this.updateSecondValue();
+  }
+
+  onChangeAfter(newValue:string){
+    var regex = /^\d:\s/;
+    this.curAfter = newValue.replace(regex, ''); 
+    this.updateRate();
+    //this.updateFirstValue();
+  }
 
   ngOnInit(): void {
-    this.showRate();
+    this.clearCalc();
   }
 
 }

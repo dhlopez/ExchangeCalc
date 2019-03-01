@@ -9,21 +9,37 @@
               </div>
               <div class="col text-center resultsArea d-table">
                 <div class="d-table-cell align-middle">
-                    {{newValue | number:'1.0-2' }}
+                    {{originalValueDisplay*rate | number:'1.0-2' }}
                 </div>
               </div>
           </div>
 
           <div class="row currencyArea align-items-center">
               <div class="col text-center currencyArea d-table">
-                  <div class="d-table-cell align-middle">
+                  <!---<div class="d-table-cell align-middle">
                       {{curBefore}}
-                  </div>
+                  </div>--->
+                    <form [formGroup]="formBefore">
+                        <select formControlName="opt" (change)="onChangeBefore($event.target.value)">
+                            <option *ngFor = "let opt of optCurrenciesBefore" 
+                                [ngValue]="opt">
+                            {{opt}}
+                            </option>
+                        </select>
+                    </form>
               </div>
               <div class="col text-center currencyArea d-table">
-                  <div class="d-table-cell align-middle">
+                  <!---<div class="d-table-cell align-middle">
                       {{curAfter}}
-                  </div>
+                  </div>--->
+                  <form [formGroup]="formAfter">
+                        <select formControlName="opt" (change)="onChangeAfter($event.target.value)">
+                            <option *ngFor = "let opt of optCurrenciesAfter" 
+                                [ngValue]="opt">
+                            {{opt}}
+                            </option>
+                        </select>
+                    </form>
               </div>
           </div>
 
