@@ -33,6 +33,46 @@ export class AppComponent implements OnInit {
   formBefore:FormGroup;
   formAfter:FormGroup;
 
+  storage:Storage;
+  dbValue:string;
+  dateDiff:number;
+  
+
+  DBTest(){
+    this.storage = window.localStorage;
+    this.storage.setItem('a', '3') // Pass a key name and its value to add or update that key.
+    this.dbValue = this.storage.getItem('a'); // Pass a key name to get its value.
+    this.storage.removeItem('a') // Pass a key name to remove that key from storage.
+  }
+
+  DBInsert(from:string, to:string){
+    if(this.storage.getItem(`${from}_${to}_value`) == '')
+    {
+      this.storage.setItem(`${from}_${to}_value`, this.rate.toString());
+      this.storage.setItem(`${from}_${to}_date`, new Date().getTime().toString());
+    }
+  }
+
+  DBDelete(from:string, to:string):boolean{
+    if(this.storage.getItem(`${from}_${to}_value`) != '')
+    {
+      this.dateDiff = new Date().getDate() - new Date(this.storage.getItem(`${from}_${to}_date`)).getDate();
+      if(this.dateDiff > 86400){
+        this.storage.removeItem(`${from}_${to}_value`);
+        this.storage.removeItem(`${from}_${to}_date`);
+
+        this.updateRate();
+        this.DBInsert(this.curBefore, this.curAfter);
+        return true;
+      }
+      else{
+        //exists and it is valid
+        this.rate = +this.storage.getItem(`${from}_${to}_value`);
+      }
+    }
+    return false;
+  }
+
   operation(digit:string) {
     if(isNaN(+digit))
     {//not a number
@@ -171,7 +211,9 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.storage = window.localStorage;
     this.clearCalc();
+    this.DBTest();
   }
 
 }
