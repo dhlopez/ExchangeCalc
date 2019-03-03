@@ -45,29 +45,33 @@ export class AppComponent implements OnInit {
     this.storage.removeItem('a') // Pass a key name to remove that key from storage.
   }
 
-  DBInsert(from:string, to:string){
-    if(this.storage.getItem(`${from}_${to}_value`) == '')
+  DBInsert(from:string, to:string, localRate:number){
+    if(this.storage.getItem(`${from}_${to}_value`) == null)
     {
-      this.storage.setItem(`${from}_${to}_value`, this.rate.toString());
+      this.storage.setItem(`${from}_${to}_value`, localRate.toString());
       this.storage.setItem(`${from}_${to}_date`, new Date().getTime().toString());
+    }
+    else{
+      this.DBDelete(this.curBefore, this.curAfter);
     }
   }
 
   DBDelete(from:string, to:string):boolean{
-    if(this.storage.getItem(`${from}_${to}_value`) != '')
+    if(this.storage.getItem(`${from}_${to}_value`) != null)
     {
-      this.dateDiff = new Date().getDate() - new Date(this.storage.getItem(`${from}_${to}_date`)).getDate();
-      if(this.dateDiff > 86400){
+      this.dateDiff = new Date().getTime() - +this.storage.getItem(`${from}_${to}_date`);
+      console.log(new Date().getTime());
+      console.log(this.dateDiff);
+      if(this.dateDiff > 86400000){
         this.storage.removeItem(`${from}_${to}_value`);
         this.storage.removeItem(`${from}_${to}_date`);
 
         this.updateRate();
-        this.DBInsert(this.curBefore, this.curAfter);
         return true;
       }
       else{
-        //exists and it is valid
         this.rate = +this.storage.getItem(`${from}_${to}_value`);
+        return true;
       }
     }
     return false;
@@ -155,12 +159,15 @@ export class AppComponent implements OnInit {
   }
 
   updateRate() {
+    if(!this.DBDelete(this.curBefore, this.curAfter))
     //this.rateService.getRate(this.curBefore, this.curAfter)
     this.rateService.getRate(this.curBefore, this.curAfter)
       .subscribe(
         //rateAPI  => this.rateAPI = rateAPI,
         //rateAPI  => this.rate = rateAPI.rates[this.curBefore] / rateAPI.rates[this.curAfter],
-        rateAPI => this.rate = rateAPI.results[`${this.curBefore}_${this.curAfter}`].val,
+          rateAPI =>{ this.rate = rateAPI.results[`${this.curBefore}_${this.curAfter}`].val,
+          this.DBInsert(this.curBefore, this.curAfter, rateAPI.results[`${this.curBefore}_${this.curAfter}`].val);
+        },
         (error: any) => this.errorMessage = <any>error
       );
       //this.rate = (this.rateAPI.rates[this.curBefore]/this.rateAPI.rates[this.curAfter]) ;
@@ -168,7 +175,6 @@ export class AppComponent implements OnInit {
   
   clearCalc()
   {    
-    console.log(this.rate);
     this.originalValueDisplay = "0";
     this.originalFirstValue = "0";
     this.originalSecondValue = "0";
@@ -184,6 +190,7 @@ export class AppComponent implements OnInit {
       opt: new FormControl(this.optCurrenciesAfter[2]),
     });
     this.updateRate();
+    //this.DBDelete(this.curBefore, this.curAfter);
   }
 
   setBeforeCurrency(cur:string){
@@ -213,7 +220,8 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     this.storage = window.localStorage;
     this.clearCalc();
-    this.DBTest();
+    //this.DBTest();
+    
   }
 
 }

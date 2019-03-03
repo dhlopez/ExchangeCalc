@@ -14,7 +14,7 @@ import { Rate } from './rate';
     //USD,CAD
     private baseUrl = 'https://free.currencyconverterapi.com/api/v6/convert?q=';
                                                 //USD_PHP,PHP_USD&compact=ultra';
-    private key = '5f8325b1a91b04d0a655'
+    private key = ''
     constructor(private http: HttpClient) { 
     
     }
