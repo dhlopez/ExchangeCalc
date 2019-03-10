@@ -4,6 +4,7 @@ import { Rate } from './rate';
 import {FormControl, FormGroup} from '@angular/forms';
 import { debug } from 'util';
 import { Observable } from 'rxjs';
+import { ICurrency } from './ICurrency';
 
 
 @Component({
@@ -36,6 +37,8 @@ export class AppComponent implements OnInit {
   storage:Storage;
   dbValue:string;
   dateDiff:number;
+
+  currencyList: ICurrency[];
   
 
   DBTest(){
@@ -57,24 +60,35 @@ export class AppComponent implements OnInit {
   }
 
   DBDelete(from:string, to:string):boolean{
-    if(this.storage.getItem(`${from}_${to}_value`) != null)
+    if(localStorage.getItem(`${from}_${to}_value`) != null)
     {
-      this.dateDiff = new Date().getTime() - +this.storage.getItem(`${from}_${to}_date`);
-      console.log(new Date().getTime());
-      console.log(this.dateDiff);
+      this.dateDiff = new Date().getTime() - +localStorage.getItem(`${from}_${to}_date`);
       if(this.dateDiff > 86400000){
-        this.storage.removeItem(`${from}_${to}_value`);
-        this.storage.removeItem(`${from}_${to}_date`);
+        localStorage.removeItem(`${from}_${to}_value`);
+        localStorage.removeItem(`${from}_${to}_date`);
 
         this.updateRate();
         return true;
       }
       else{
-        this.rate = +this.storage.getItem(`${from}_${to}_value`);
+        this.rate = +localStorage.getItem(`${from}_${to}_value`);
         return true;
       }
     }
     return false;
+  }
+
+  InsertCurrencyList(currencyList:ICurrency[]){
+    
+    // for(var i=0; i < this.currencyList.length; i++)
+    // {
+    //   console.log(currencyList[i].results.CUR.id);
+    //   this.storage.setItem(`${currencyList[i].results.CUR.id}`, `${currencyList[i].results.CUR.id}`);
+    // }
+    this.currencyList.forEach((currency:ICurrency) => {
+      console.log('a');
+      this.storage.setItem(`${currency.results.CUR.id}`, `${currency.results.CUR.id}`);
+    });
   }
 
   operation(digit:string) {
@@ -217,11 +231,29 @@ export class AppComponent implements OnInit {
     //this.updateFirstValue();
   }
 
+  verifyCurrencyList():boolean{
+    if(localStorage.getItem('MXN') == null){
+      return false;
+    }
+    return true;
+  }
+
   ngOnInit(): void {
-    this.storage = window.localStorage;
+    //this.storage = window.localStorage;
     this.clearCalc();
     //this.DBTest();
-    
+    if(!this.verifyCurrencyList()){
+      
+      this.rateService.getCurrencyList().subscribe(
+        data =>{
+          this.currencyList = data['results'],
+          //this.InsertCurrencyList(this.currencyList),
+          Object.keys(data['results']).forEach(function (key) {
+            localStorage.setItem(`${key}`, `${key}`);
+          });
+        }
+        , (error: any) => this.errorMessage = <any>error);
+    }
   }
 
 }
