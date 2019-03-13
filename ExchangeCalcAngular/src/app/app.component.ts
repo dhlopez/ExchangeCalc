@@ -5,6 +5,7 @@ import {FormControl, FormGroup} from '@angular/forms';
 import { debug } from 'util';
 import { Observable } from 'rxjs';
 import { ICurrency } from './ICurrency';
+import { stringify } from '@angular/core/src/util';
 
 
 @Component({
@@ -25,8 +26,8 @@ export class AppComponent implements OnInit {
   bolPerformCalc: boolean = false;
   rateAPI:Rate;
   errorMessage: string;
-  optCurrenciesBefore: string[] = ['CAD','USD','MXN'];
-  optCurrenciesAfter: string[] = ['CAD','USD','MXN'];
+  optCurrenciesBefore: string[] = [];
+  optCurrenciesAfter: string[] = [];
 
   curBefore:string;
   curAfter:string;
@@ -39,6 +40,8 @@ export class AppComponent implements OnInit {
   dateDiff:number;
 
   currencyList: ICurrency[];
+  strCurrencies:string="";
+
   
 
   DBTest(){
@@ -49,10 +52,10 @@ export class AppComponent implements OnInit {
   }
 
   DBInsert(from:string, to:string, localRate:number){
-    if(this.storage.getItem(`${from}_${to}_value`) == null)
+    if(localStorage.getItem(`${from}_${to}_value`) == null)
     {
-      this.storage.setItem(`${from}_${to}_value`, localRate.toString());
-      this.storage.setItem(`${from}_${to}_date`, new Date().getTime().toString());
+      localStorage.setItem(`${from}_${to}_value`, localRate.toString());
+      localStorage.setItem(`${from}_${to}_date`, new Date().getTime().toString());
     }
     else{
       this.DBDelete(this.curBefore, this.curAfter);
@@ -86,8 +89,7 @@ export class AppComponent implements OnInit {
     //   this.storage.setItem(`${currencyList[i].results.CUR.id}`, `${currencyList[i].results.CUR.id}`);
     // }
     this.currencyList.forEach((currency:ICurrency) => {
-      console.log('a');
-      this.storage.setItem(`${currency.results.CUR.id}`, `${currency.results.CUR.id}`);
+      localStorage.setItem(`${currency.results.CUR.id}`, `${currency.results.CUR.id}`);
     });
   }
 
@@ -189,14 +191,17 @@ export class AppComponent implements OnInit {
   
   clearCalc()
   {    
+    this.strCurrencies= "";
     this.originalValueDisplay = "0";
     this.originalFirstValue = "0";
     this.originalSecondValue = "0";
     this.newValue = 0;
     this.strOperation = '';
     this.bolPerformCalc = false;
-    this.curBefore = 'CAD';
-    this.curAfter = 'MXN';
+    this.curBefore = 'ALL';
+    this.curAfter = 'EUR';
+    this.optCurrenciesBefore = localStorage.getItem('currencies').split(",").sort();
+    this.optCurrenciesAfter = localStorage.getItem('currencies').split(",").sort();
     this.formBefore = new FormGroup({
       opt: new FormControl(this.optCurrenciesBefore[0]),
     });
@@ -209,8 +214,6 @@ export class AppComponent implements OnInit {
 
   setBeforeCurrency(cur:string){
     this.curBefore = cur;
-    console.log(cur);
-    console.log(this.curBefore);
   }
 
   constructor(private rateService: RateService){
@@ -218,21 +221,21 @@ export class AppComponent implements OnInit {
   }
   onChangeBefore(newValue:string){
     // this.debug();
-    var regex = /^\d:\s/;
+    var regex = /^\d+:\s/;
     this.curBefore = newValue.replace(regex, '');  
     this.updateRate();
     //this.updateSecondValue();
   }
 
   onChangeAfter(newValue:string){
-    var regex = /^\d:\s/;
+    var regex = /^\d+:\s/;
     this.curAfter = newValue.replace(regex, ''); 
     this.updateRate();
     //this.updateFirstValue();
   }
 
   verifyCurrencyList():boolean{
-    if(localStorage.getItem('MXN') == null){
+    if(localStorage.getItem('currencies') == null){
       return false;
     }
     return true;
@@ -241,16 +244,18 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     //this.storage = window.localStorage;
     this.clearCalc();
+    //localStorage.clear();
     //this.DBTest();
     if(!this.verifyCurrencyList()){
-      
       this.rateService.getCurrencyList().subscribe(
         data =>{
           this.currencyList = data['results'],
           //this.InsertCurrencyList(this.currencyList),
-          Object.keys(data['results']).forEach(function (key) {
-            localStorage.setItem(`${key}`, `${key}`);
-          });
+          Object.keys(data['results']).forEach(( obj, key) =>{
+            this.strCurrencies += `${obj},`;
+          })
+          this.strCurrencies = this.strCurrencies.substring(0, this.strCurrencies.lastIndexOf(",")),
+          localStorage.setItem('currencies', `${this.strCurrencies}`);
         }
         , (error: any) => this.errorMessage = <any>error);
     }
