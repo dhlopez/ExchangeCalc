@@ -17,7 +17,7 @@ import { stringify } from '@angular/core/src/util';
 
 export class AppComponent implements OnInit {
   title = 'ExchangeCalcAngular';
-  originalValueDisplay:string = "0";
+  originalValueDisplay:number = 0;
   originalFirstValue:string = "0";
   originalSecondValue:string = "0";
   newValue:number = 0;
@@ -103,12 +103,11 @@ export class AppComponent implements OnInit {
       //number
       if(this.bolPerformCalc){
         this.originalSecondValue = this.RemoveLeadingZeroes(this.originalSecondValue) + digit;
-        this.originalValueDisplay = this.originalSecondValue;        
+        this.originalValueDisplay = +this.originalSecondValue;        
       }
       else{
         this.originalFirstValue = this.RemoveLeadingZeroes(this.originalFirstValue) + digit;
-        this.originalValueDisplay = this.originalFirstValue;
-        //this.newValue = Number(this.originalValueDisplay) * this.rate;
+        this.originalValueDisplay = +this.originalFirstValue;
       }
     }
   }
@@ -140,20 +139,20 @@ export class AppComponent implements OnInit {
     {
       switch (this.strOperation) {
         case '/':
-          this.originalValueDisplay = (+this.originalFirstValue / +this.originalSecondValue).toString();
-          this.newValue = +this.originalValueDisplay / this.rate;
+          this.originalValueDisplay = (+this.originalFirstValue / +this.originalSecondValue);
+          this.newValue = this.originalValueDisplay / this.rate;
           break;
         case '*':
-          this.originalValueDisplay = (+this.originalFirstValue * +this.originalSecondValue).toString();
-          this.newValue = +this.originalValueDisplay / this.rate;
+          this.originalValueDisplay = (+this.originalFirstValue * +this.originalSecondValue);
+          this.newValue = this.originalValueDisplay / this.rate;
           break;
         case '-':
-          this.originalValueDisplay = (+this.originalFirstValue - +this.originalSecondValue).toString();
-          this.newValue = +this.originalValueDisplay / this.rate;
+          this.originalValueDisplay = (+this.originalFirstValue - +this.originalSecondValue);
+          this.newValue = this.originalValueDisplay / this.rate;
           break;
         case '+':
-          this.originalValueDisplay = (+this.originalFirstValue + +this.originalSecondValue).toString();
-          this.newValue = +this.originalValueDisplay / this.rate;
+          this.originalValueDisplay = (+this.originalFirstValue + +this.originalSecondValue);
+          this.newValue = this.originalValueDisplay / this.rate;
           break;
         case '.':
           break;
@@ -192,16 +191,17 @@ export class AppComponent implements OnInit {
   clearCalc()
   {    
     this.strCurrencies= "";
-    this.originalValueDisplay = "0";
+    this.originalValueDisplay = 0;
     this.originalFirstValue = "0";
     this.originalSecondValue = "0";
     this.newValue = 0;
     this.strOperation = '';
     this.bolPerformCalc = false;
-    this.curBefore = 'ALL';
-    this.curAfter = 'EUR';
-    this.optCurrenciesBefore = localStorage.getItem('currencies').split(",").sort();
-    this.optCurrenciesAfter = localStorage.getItem('currencies').split(",").sort();
+    this.curBefore = 'AED';
+    this.curAfter = 'ALL';
+    if(this.verifyCurrencyList()){
+      this.populateCurrenciesList();
+    }
     this.formBefore = new FormGroup({
       opt: new FormControl(this.optCurrenciesBefore[0]),
     });
@@ -241,6 +241,12 @@ export class AppComponent implements OnInit {
     return true;
   }
 
+  populateCurrenciesList()
+  {
+    this.optCurrenciesBefore = localStorage.getItem('currencies').split(",").sort();
+    this.optCurrenciesAfter = localStorage.getItem('currencies').split(",").sort();
+  }
+
   ngOnInit(): void {
     //this.storage = window.localStorage;
     this.clearCalc();
@@ -255,7 +261,8 @@ export class AppComponent implements OnInit {
             this.strCurrencies += `${obj},`;
           })
           this.strCurrencies = this.strCurrencies.substring(0, this.strCurrencies.lastIndexOf(",")),
-          localStorage.setItem('currencies', `${this.strCurrencies}`);
+          localStorage.setItem('currencies', `${this.strCurrencies}`),
+          this.populateCurrenciesList();
         }
         , (error: any) => this.errorMessage = <any>error);
     }
